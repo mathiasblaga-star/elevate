@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Life Dashboard</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: white;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      position: relative;
+      height: 220px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .card img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      top: 0;
+      left: 0;
+      filter: brightness(0.6);
+    }
+
+    .content {
+      position: relative;
+      padding: 20px;
+    }
+
+    .content h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .content p {
+      font-size: 14px;
+      color: #d1d5db;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border: 1px solid white;
+      border-radius: 6px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding: 15px;
+      border-top: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-between;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container" id="home">
+    <h1>LIFE DASHBOARD</h1>
+    <div class="subtitle">Your Health. Your Goals. Your Future.</div>
+
+    <div class="grid">
+
+      <!-- Mental Health -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e">
+        <div class="content">
+          <h2>MENTAL HEALTH</h2>
+          <p>Take care of your mind. Build habits that bring clarity and strength.</p>
+          <button class="btn" onclick="showContent('mental')">View Tips</button>
+        </div>
+      </div>
+
+      <!-- Study -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba">
+        <div class="content">
+          <h2>STUDY ROUTINE</h2>
+          <p>Stay consistent. Plan your day and focus better.</p>
+          <button class="btn" onclick="showContent('study')">View Plan</button>
+        </div>
+      </div>
+
+      <!-- Fitness -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1558611848-73f7eb4001a1">
+        <div class="content">
+          <h2>FITNESS</h2>
+          <p>Build strength, improve energy, and stay active.</p>
+          <button class="btn" onclick="showContent('fitness')">View Workouts</button>
+        </div>
+      </div>
+
+      <!-- Money -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1579621970795-87facc2f976d">
+        <div class="content">
+          <h2>MONEY & SKILLS</h2>
+          <p>Learn valuable skills and create income opportunities.</p>
+          <button class="btn" onclick="showContent('money')">Explore Ideas</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div>Focus on progress, not perfection.</div>
+      <div>Discipline today, freedom tomorrow.</div>
+      <div>Small steps lead to big results.</div>
+    </div>
+
+  </div>
+<div id="output" style="margin-top: 30px; padding: 20px; background: #111827; border-radius: 10px;">
+  <h2>Content</h2>
+  <p>Click a button above to see details.</p>
+</div>
+
+<script>
+function showContent(type) {
+  let content = "";
+
+  if (type === "mental") {    content = "<h2>Mental Health</h2><p>Sleep well, take breaks, manage stress.
+</p>";
+  }
+
+  if (type === "study") {
+    content = "<h2>Study Routine</h2><p>Focus sessions, remove distractions.</p>";
+  }
+
+  if (type === "fitness") {
+    content = "<h2>Fitness</h2><p>Push-ups, running, consistency.</p>";
+  }
+
+  if (type === "money") {
+    content = "<h2>Money & Skills</h2><p>Learn skills, build projects.</p>";
+  }
+
+  document.getElementById("output").innerHTML = content;
+}
+</script>
+
+</body>
+</html>

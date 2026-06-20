@@ -1,0 +1,143 @@
+// Elevate — Prisma schema (Supabase Postgres)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum Category {
+  HEALTH
+  MINDSET
+  PRODUCTIVITY
+  SOCIAL
+  FINANCE
+}
+
+enum GoalStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Frequency {
+  DAILY
+  WEEKLY
+}
+
+enum NotifType {
+  STREAK
+  SYSTEM
+  REMINDER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  avatar       String? // hex colour for avatar initial
+  plan         Plan     @default(FREE)
+  emailDigest  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  goals         Goal[]
+  habits        Habit[]
+  habitEntries  HabitEntry[]
+  journal       JournalEntry[]
+  moods         MoodLog[]
+  notifications Notification[]
+}
+
+model Goal {
+  id         String     @id @default(cuid())
+  userId     String
+  title      String
+  category   Category   @default(PRODUCTIVITY)
+  targetDate DateTime?
+  status     GoalStatus @default(NOT_STARTED)
+  progress   Int        @default(0) // 0-100
+  order      Int        @default(0)
+  createdAt  DateTime   @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Habit {
+  id           String    @id @default(cuid())
+  userId       String
+  name         String
+  frequency    Frequency @default(DAILY)
+  streak       Int       @default(0)
+  longestStreak Int      @default(0)
+  category     Category  @default(HEALTH)
+  createdAt    DateTime  @default(now())
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries HabitEntry[]
+
+  @@index([userId])
+}
+
+model HabitEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  habitId   String
+  date      DateTime @db.Date
+  completed Boolean  @default(true)
+  notes     String?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([userId])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  mood      Int      @default(3) // 1-5
+  tags      String[]
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MoodLog {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int // 1-10
+  note      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  message   String
+  read      Boolean   @default(false)
+  type      NotifType @default(SYSTEM)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
