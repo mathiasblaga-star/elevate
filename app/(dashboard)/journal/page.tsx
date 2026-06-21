@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,12 +29,50 @@ export default function JournalPage() {
   const [tags, setTags] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [totalEntries, setTotalEntries] = useState(0);
+  const [insights, setInsights] = useState("");
+  const [insightsBusy, setInsightsBusy] = useState(false);
+  const [insightsErr, setInsightsErr] = useState("");
+
+  async function generateInsights() {
+    setInsightsBusy(true);
+    setInsights("");
+    setInsightsErr("");
+    try {
+      const res = await fetch("/api/ai/journal-insights", { method: "POST" });
+      if (!res.ok || !res.body) {
+        setInsightsErr(
+          res.status === 503
+            ? "AI is not configured yet."
+            : res.status === 400
+              ? "Write at least 7 entries to unlock insights."
+              : "Could not generate insights. Try again."
+        );
+        return;
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += dec.decode(value, { stream: true });
+        setInsights(acc);
+      }
+    } catch {
+      setInsightsErr("Could not generate insights. Try again.");
+    } finally {
+      setInsightsBusy(false);
+    }
+  }
+
   const load = useCallback(async (p: number, append: boolean) => {
     const r = await fetch(`/api/journal?page=${p}`);
     if (!r.ok) return;
     const d = await r.json();
     setEntries((prev) => (append ? [...prev, ...d.entries] : d.entries));
     setHasMore(d.hasMore);
+    setTotalEntries(d.total);
     setPage(p);
   }, []);
 
@@ -208,6 +246,40 @@ export default function JournalPage() {
             </Button>
           )}
         </div>
+      </Card>
+
+      {/* AI insights */}
+      <Card className="space-y-4 lg:col-span-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 font-display text-2xl text-ink">
+              <Sparkles className="h-5 w-5" /> AI insights
+            </h2>
+            <p className="text-sm text-muted">
+              {totalEntries >= 7
+                ? "Analyse recurring themes and emotional patterns across your entries."
+                : `Write ${7 - totalEntries} more ${
+                    7 - totalEntries === 1 ? "entry" : "entries"
+                  } to unlock AI insights.`}
+            </p>
+          </div>
+          <Button
+            onClick={generateInsights}
+            disabled={insightsBusy || totalEntries < 7}
+          >
+            {insightsBusy ? "Analysing…" : "Generate insights"}
+          </Button>
+        </div>
+        {insightsErr && (
+          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            {insightsErr}
+          </p>
+        )}
+        {insights && (
+          <div className="whitespace-pre-wrap rounded-lg border border-white/10 bg-white/[0.02] p-4 text-sm text-ink/90">
+            {insights}
+          </div>
+        )}
       </Card>
     </div>
   );
