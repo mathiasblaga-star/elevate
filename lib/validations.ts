@@ -89,6 +89,15 @@ export const milestoneToggleSchema = z.object({
   completed: z.boolean(),
 });
 
+export const partnerInviteSchema = z.object({
+  email: z.string().email("Enter a valid email"),
+});
+
+export const partnerActionSchema = z.object({
+  id: z.string().min(1),
+  action: z.enum(["accept", "decline"]),
+});
+
 export const profileSchema = z.object({
   name: z.string().min(1).max(80).optional(),
   avatar: z

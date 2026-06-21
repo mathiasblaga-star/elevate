@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const instrument = Instrument_Serif({
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} bg-navy text-ink`}
       >
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>

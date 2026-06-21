@@ -3,7 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { xpProgress } from "@/lib/xp";
 import { BADGES } from "@/lib/badges";
 import { Card } from "@/components/ui/card";
-import { Award, Snowflake, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Partners } from "@/components/Partners";
+import { Award, Snowflake, Lock, Share2, FileText } from "lucide-react";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -22,6 +24,7 @@ export default async function ProfilePage() {
   const p = xpProgress(user.xp);
   const pct = p.span > 0 ? Math.round((p.intoLevel / p.span) * 100) : 100;
   const initial = (user.name ?? user.email ?? "?")[0]?.toUpperCase() ?? "?";
+  const month = new Date().toISOString().slice(0, 7);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -62,7 +65,22 @@ export default async function ProfilePage() {
             />
           </div>
         </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="secondary">
+            <a href="/api/share/streak" target="_blank" rel="noopener noreferrer">
+              <Share2 className="h-4 w-4" /> Share streak card
+            </a>
+          </Button>
+          <Button asChild variant="secondary">
+            <a href={`/api/report/${month}`} target="_blank" rel="noopener noreferrer">
+              <FileText className="h-4 w-4" /> Monthly report
+            </a>
+          </Button>
+        </div>
       </Card>
+
+      <Partners />
 
       {/* Badges */}
       <Card className="space-y-4">

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { normalizeWeights, DEFAULT_WEIGHTS } from "@/lib/lifeScore";
+import { applyTheme, applyAccent } from "@/components/ThemeController";
 
 type User = {
   name: string | null;
@@ -88,6 +89,30 @@ export function SettingsClient({ user }: { user: User }) {
         : { type: "err", text: "Could not save weighting" }
     );
     if (r.ok) router.refresh();
+  }
+
+  const [theme, setTheme] = useState(user.theme);
+  const [accent, setAccent] = useState(user.accent);
+
+  function changeTheme(value: string) {
+    setTheme(value);
+    applyTheme(value);
+    fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ theme: value }),
+    });
+  }
+  function changeAccent(value: string) {
+    setAccent(value);
+    applyAccent(value);
+  }
+  function saveAccent() {
+    fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accent }),
+    });
   }
 
   const [confirmDelete, setConfirmDelete] = useState("");
@@ -209,6 +234,80 @@ export function SettingsClient({ user }: { user: User }) {
         </div>
         <Note msg={pwMsg} />
         <Button onClick={changePassword}>Change password</Button>
+      </Card>
+
+      {/* Appearance */}
+      <Card className="space-y-4">
+        <h2 className="font-display text-2xl text-ink">Appearance</h2>
+        <div className="space-y-1.5">
+          <Label>Theme</Label>
+          <div className="flex rounded-lg border border-white/10 p-0.5">
+            {[
+              { v: "oled", label: "OLED black" },
+              { v: "dark", label: "Dark" },
+            ].map((t) => (
+              <button
+                key={t.v}
+                onClick={() => changeTheme(t.v)}
+                className={cn(
+                  "flex-1 rounded-md px-3 py-1.5 text-sm transition",
+                  theme === t.v ? "bg-white/10 text-foreground" : "text-muted hover:text-foreground"
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="accent">Accent colour</Label>
+          <div className="flex items-center gap-3">
+            <input
+              id="accent"
+              type="color"
+              value={accent}
+              onChange={(e) => changeAccent(e.target.value)}
+              onBlur={saveAccent}
+              className="h-10 w-14 cursor-pointer rounded border border-white/10 bg-transparent"
+            />
+            <Button variant="secondary" onClick={saveAccent}>
+              Save accent
+            </Button>
+            <button
+              onClick={() => {
+                changeAccent("#ffffff");
+                fetch("/api/user", {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ accent: "#ffffff" }),
+                });
+              }}
+              className="text-sm text-muted hover:text-foreground"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Data export */}
+      <Card className="space-y-3">
+        <h2 className="font-display text-2xl text-ink">Your data</h2>
+        <p className="text-sm text-muted">
+          Download everything you&apos;ve tracked. Yours to keep, anytime.
+        </p>
+        <div className="flex gap-2">
+          <Button asChild variant="secondary">
+            <a href="/api/user/export?format=json" download>
+              Export JSON
+            </a>
+          </Button>
+          <Button asChild variant="secondary">
+            <a href="/api/user/export?format=csv" download>
+              Export CSV
+            </a>
+          </Button>
+        </div>
       </Card>
 
       {/* Life Score weighting */}

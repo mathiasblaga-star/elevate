@@ -5,23 +5,31 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_COLORS, cn } from "@/lib/utils";
+import { tickHabit } from "@/lib/offlineQueue";
 
 type TH = { id: string; name: string; category: string; doneToday: boolean };
 
 export function DashboardHabits({ initial }: { initial: TH[] }) {
   const [habits, setHabits] = useState(initial);
   const [busy, setBusy] = useState<string | null>(null);
+  const [queued, setQueued] = useState(false);
   const router = useRouter();
 
   async function toggle(h: TH) {
     setBusy(h.id);
-    const res = await fetch(`/api/habits/${h.id}/check`, { method: "POST" });
-    if (res.ok) {
-      const d = await res.json();
+    // optimistic flip
+    setHabits((prev) =>
+      prev.map((x) => (x.id === h.id ? { ...x, doneToday: !x.doneToday } : x))
+    );
+    const res = await tickHabit(h.id);
+    if (res.ok && res.data) {
+      const d = res.data as { completed: boolean };
       setHabits((prev) =>
         prev.map((x) => (x.id === h.id ? { ...x, doneToday: d.completed } : x))
       );
       router.refresh(); // re-pull life score + stats
+    } else if (res.queued) {
+      setQueued(true); // offline — kept optimistic, will sync on reconnect
     }
     setBusy(null);
   }
@@ -36,6 +44,11 @@ export function DashboardHabits({ initial }: { initial: TH[] }) {
 
   return (
     <ul className="space-y-2">
+      {queued && (
+        <li className="rounded-md bg-white/5 px-3 py-2 text-xs text-muted">
+          You&apos;re offline — ticks are saved and will sync when you reconnect.
+        </li>
+      )}
       {habits.map((h) => (
         <li key={h.id}>
           <button

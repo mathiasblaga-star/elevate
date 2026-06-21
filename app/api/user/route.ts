@@ -77,6 +77,17 @@ export async function DELETE(req: Request) {
   const parsed = deleteAccountSchema.safeParse(body);
   if (!parsed.success)
     return badRequest({ confirm: 'Type "DELETE" to confirm' });
-  await prisma.user.delete({ where: { id: userId } }); // cascade wipes all children
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true },
+  });
+  // FK cascades wipe the user's own children; also remove inbound partner invites
+  // (addresseeId/email have no FK), then delete the user. GDPR full purge.
+  await prisma.$transaction([
+    prisma.partnership.deleteMany({
+      where: { OR: [{ addresseeId: userId }, ...(user ? [{ addresseeEmail: user.email }] : [])] },
+    }),
+    prisma.user.delete({ where: { id: userId } }),
+  ]);
   return NextResponse.json({ ok: true });
 }

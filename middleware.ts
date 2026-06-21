@@ -17,6 +17,8 @@ function buildCsp(nonce: string): string {
     `img-src 'self' data: blob:`,
     `font-src 'self'`,
     `connect-src 'self'`,
+    `worker-src 'self'`,
+    `manifest-src 'self'`,
     `frame-ancestors 'none'`,
     `base-uri 'self'`,
     `form-action 'self'`,
@@ -49,5 +51,7 @@ export default auth((req) => {
 
 export const config = {
   // All routes except static assets / Next internals.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|robots.txt|sitemap.xml).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|robots.txt|sitemap.xml|manifest.webmanifest|sw.js).*)",
+  ],
 };
