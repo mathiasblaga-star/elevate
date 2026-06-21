@@ -1,12 +1,12 @@
 import Link from "next/link";
 import {
-  Sparkles,
   CheckCircle2,
   Target,
   Smile,
   BookOpen,
   ArrowRight,
 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { LifeScoreRing } from "@/components/LifeScoreRing";
 import { Button } from "@/components/ui/button";
 
@@ -61,7 +61,7 @@ export default function Home() {
         <div className="absolute inset-0 grid-bg" />
         <header className="absolute left-0 top-0 flex w-full items-center justify-between px-6 py-5">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-violet-500" />
+            <Logo className="h-6 w-6 text-ink" />
             <span className="font-display text-2xl text-ink">Elevate</span>
           </div>
           <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export default function Home() {
       <footer className="border-t border-white/10 px-6 py-10">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-violet-500" />
+            <Logo className="h-5 w-5 text-ink" />
             <span className="font-display text-xl text-ink">Elevate</span>
           </div>
           <nav className="flex gap-6 text-sm text-muted">

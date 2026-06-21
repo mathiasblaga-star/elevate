@@ -11,9 +11,9 @@ import {
   Smile,
   Settings,
   LogOut,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -32,7 +32,7 @@ export function Sidebar() {
       {/* Desktop sidebar */}
       <aside className="fixed left-0 top-0 z-30 hidden h-screen w-60 flex-col border-r border-white/10 bg-card/40 p-4 backdrop-blur-xl md:flex">
         <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
-          <Sparkles className="h-5 w-5 text-violet-500" />
+          <Logo className="h-6 w-6 text-ink" />
           <span className="font-display text-2xl text-ink">Elevate</span>
         </Link>
         <nav className="flex flex-1 flex-col gap-1">

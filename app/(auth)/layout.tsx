@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function AuthLayout({
   children,
@@ -13,7 +13,7 @@ export default function AuthLayout({
         href="/"
         className="relative mb-8 flex items-center gap-2"
       >
-        <Sparkles className="h-6 w-6 text-violet-500" />
+        <Logo className="h-8 w-8 text-ink" />
         <span className="font-display text-3xl text-ink">Elevate</span>
       </Link>
       <div className="relative w-full max-w-sm">{children}</div>
