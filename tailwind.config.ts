@@ -60,10 +60,20 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(16px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "toast-in": {
+          from: { opacity: "0", transform: "translateY(12px) scale(0.97)" },
+          to: { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+        "scale-in": {
+          from: { opacity: "0", transform: "scale(0.96)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
-        "fade-in": "fade-in 0.5s ease-out both",
-        "fade-in-up": "fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "fade-in": "fade-in 0.4s ease-out both",
+        "fade-in-up": "fade-in-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "toast-in": "toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "scale-in": "scale-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

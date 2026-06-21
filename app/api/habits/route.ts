@@ -6,8 +6,10 @@ import {
   badRequest,
   notFound,
   zodErrors,
+  tooManyRequests,
 } from "@/lib/api";
 import { habitCreateSchema, habitUpdateSchema } from "@/lib/validations";
+import { rateLimitApi } from "@/lib/ratelimit";
 import { todayUTC } from "@/lib/utils";
 
 export async function GET() {
@@ -29,6 +31,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const userId = await getUserId();
   if (!userId) return unauthorized();
+  if (!(await rateLimitApi(`habitcrud:${userId}`)).success) return tooManyRequests();
   const body = await req.json().catch(() => null);
   const parsed = habitCreateSchema.safeParse(body);
   if (!parsed.success) return badRequest(zodErrors(parsed.error));
@@ -39,6 +42,7 @@ export async function POST(req: Request) {
 export async function PATCH(req: Request) {
   const userId = await getUserId();
   if (!userId) return unauthorized();
+  if (!(await rateLimitApi(`habitcrud:${userId}`)).success) return tooManyRequests();
   const body = await req.json().catch(() => null);
   const parsed = habitUpdateSchema.safeParse(body);
   if (!parsed.success) return badRequest(zodErrors(parsed.error));

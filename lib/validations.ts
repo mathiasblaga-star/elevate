@@ -44,10 +44,17 @@ export const goalUpdateSchema = z.object({
   importance: z.number().int().min(0).max(1).optional(),
 });
 
+const reminderTime = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM")
+  .optional()
+  .nullable();
+
 export const habitCreateSchema = z.object({
   name: z.string().min(1, "Name is required").max(80),
   category: CategoryEnum.default("HEALTH"),
   frequency: FrequencyEnum.default("DAILY"),
+  reminderTime,
 });
 
 export const habitUpdateSchema = z.object({
@@ -55,6 +62,7 @@ export const habitUpdateSchema = z.object({
   name: z.string().min(1).max(80).optional(),
   category: CategoryEnum.optional(),
   frequency: FrequencyEnum.optional(),
+  reminderTime,
 });
 
 export const journalCreateSchema = z.object({

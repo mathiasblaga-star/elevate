@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Plus, CheckCircle2 } from "lucide-react";
 import { HabitCard, type Habit } from "@/components/HabitCard";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { tickHabit } from "@/lib/offlineQueue";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +35,9 @@ export default function HabitsPage() {
     name: "",
     category: "HEALTH",
     frequency: "DAILY",
+    reminderTime: "",
   });
+  const { toast } = useToast();
 
   async function load() {
     const r = await fetch("/api/habits");
@@ -46,52 +50,68 @@ export default function HabitsPage() {
 
   function openNew() {
     setEditing(null);
-    setForm({ name: "", category: "HEALTH", frequency: "DAILY" });
+    setForm({ name: "", category: "HEALTH", frequency: "DAILY", reminderTime: "" });
     setOpen(true);
   }
   function openEdit(h: Habit) {
     setEditing(h);
-    setForm({ name: h.name, category: h.category, frequency: h.frequency });
+    setForm({
+      name: h.name,
+      category: h.category,
+      frequency: h.frequency,
+      reminderTime: h.reminderTime ?? "",
+    });
     setOpen(true);
   }
 
   async function check(h: Habit) {
     setBusy(h.id);
-    const r = await fetch(`/api/habits/${h.id}/check`, { method: "POST" });
-    if (r.ok) {
-      const d = await r.json();
+    const res = await tickHabit(h.id);
+    if (res.ok && res.data) {
+      const d = res.data as {
+        completed: boolean;
+        streak: number;
+        longestStreak: number;
+        leveledUp?: boolean;
+        level?: number;
+        badges?: string[];
+      };
       setHabits((prev) =>
         prev.map((x) =>
           x.id === h.id
-            ? {
-                ...x,
-                doneToday: d.completed,
-                streak: d.streak,
-                longestStreak: d.longestStreak,
-              }
+            ? { ...x, doneToday: d.completed, streak: d.streak, longestStreak: d.longestStreak }
             : x
         )
       );
+      if (d.completed) toast("+10 XP", "success");
+      if (d.leveledUp) toast(`Level up — you're level ${d.level}!`, "success");
+      if (d.badges?.length) toast("Badge unlocked!", "success");
+    } else if (res.queued) {
+      toast("Saved offline — will sync when you reconnect", "default");
     }
     setBusy(null);
   }
 
   async function submit() {
     if (!form.name.trim()) return;
+    const payload = { ...form, reminderTime: form.reminderTime || null };
     const r = editing
       ? await fetch("/api/habits", {
           method: "PATCH",
           headers: HEADERS,
-          body: JSON.stringify({ id: editing.id, ...form }),
+          body: JSON.stringify({ id: editing.id, ...payload }),
         })
       : await fetch("/api/habits", {
           method: "POST",
           headers: HEADERS,
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
     if (r.ok) {
       setOpen(false);
+      toast(editing ? "Habit updated" : "Habit created", "success");
       await load();
+    } else {
+      toast("Could not save habit", "error");
     }
   }
 
@@ -189,6 +209,16 @@ export default function HabitsPage() {
                   <SelectItem value="WEEKLY">Weekly</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="hreminder">Reminder time (optional)</Label>
+              <Input
+                id="hreminder"
+                type="time"
+                value={form.reminderTime}
+                onChange={(e) => setForm({ ...form, reminderTime: e.target.value })}
+                className="[color-scheme:dark]"
+              />
             </div>
             <Button onClick={submit} className="w-full">
               {editing ? "Save changes" : "Create habit"}

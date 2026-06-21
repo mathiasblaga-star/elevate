@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_COLORS, cn } from "@/lib/utils";
 import { tickHabit } from "@/lib/offlineQueue";
+import { useToast } from "@/components/ui/toast";
 
 type TH = { id: string; name: string; category: string; doneToday: boolean };
 
@@ -14,6 +15,7 @@ export function DashboardHabits({ initial }: { initial: TH[] }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [queued, setQueued] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   async function toggle(h: TH) {
     setBusy(h.id);
@@ -23,13 +25,22 @@ export function DashboardHabits({ initial }: { initial: TH[] }) {
     );
     const res = await tickHabit(h.id);
     if (res.ok && res.data) {
-      const d = res.data as { completed: boolean };
+      const d = res.data as {
+        completed: boolean;
+        leveledUp?: boolean;
+        level?: number;
+        badges?: string[];
+      };
       setHabits((prev) =>
         prev.map((x) => (x.id === h.id ? { ...x, doneToday: d.completed } : x))
       );
+      if (d.completed) toast("+10 XP", "success");
+      if (d.leveledUp) toast(`Level up — you're level ${d.level}!`, "success");
+      if (d.badges?.length) toast("Badge unlocked!", "success");
       router.refresh(); // re-pull life score + stats
     } else if (res.queued) {
-      setQueued(true); // offline — kept optimistic, will sync on reconnect
+      setQueued(true);
+      toast("Saved offline — will sync when you reconnect", "default");
     }
     setBusy(null);
   }

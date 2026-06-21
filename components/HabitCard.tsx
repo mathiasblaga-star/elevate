@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, Pencil, Trash2, Check } from "lucide-react";
+import { Flame, Pencil, Trash2, Check, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_COLORS } from "@/lib/utils";
@@ -13,6 +13,7 @@ export type Habit = {
   longestStreak: number;
   category: string;
   doneToday: boolean;
+  reminderTime?: string | null;
 };
 
 export function HabitCard({
@@ -46,6 +47,12 @@ export function HabitCard({
             {habit.streak} day streak
           </span>
           <span>Best: {habit.longestStreak}</span>
+          {habit.reminderTime && (
+            <span className="flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
+              {habit.reminderTime}
+            </span>
+          )}
         </div>
       </div>
       <Button

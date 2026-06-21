@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { normalizeWeights, DEFAULT_WEIGHTS } from "@/lib/lifeScore";
 import { applyTheme, applyAccent } from "@/components/ThemeController";
+import { InstallButton } from "@/components/InstallButton";
 
 type User = {
   name: string | null;
@@ -288,6 +289,15 @@ export function SettingsClient({ user }: { user: User }) {
             </button>
           </div>
         </div>
+      </Card>
+
+      {/* Install */}
+      <Card className="space-y-3">
+        <h2 className="font-display text-2xl text-ink">Install Elevate</h2>
+        <p className="text-sm text-muted">
+          Install Elevate as an app for offline access and home-screen launch.
+        </p>
+        <InstallButton />
       </Card>
 
       {/* Data export */}
