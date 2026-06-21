@@ -3,9 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0f1e;
-  --foreground: #f0eef9;
+  --background: #0a0a0a;
+  --foreground: #fafafa;
   --liquid: cubic-bezier(0.22, 1, 0.36, 1);
+  /* single accent (R G B, space-separated for rgb(var() / alpha)); white by default */
+  --accent: 255 255 255;
+}
+
+/* OLED variant = pure black base; Dark variant = slightly lifted. Toggled via html class. */
+.theme-oled {
+  --background: #000000;
+}
+.theme-dark {
+  --background: #0a0a0a;
 }
 
 @layer base {
@@ -21,125 +31,50 @@
     font-family: var(--font-sans), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  /* Baseline focus affordance for elements that don't opt into a ring. */
   :focus-visible {
-    outline: 2px solid rgba(139, 92, 246, 0.7);
+    outline: 2px solid rgb(var(--accent) / 0.8);
     outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* liquid-glass surface */
+  /* glassmorphism surface — jet tint, subtle white border, soft depth */
   .glass {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.02)
-    );
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 8px 24px -12px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
-  /* interactive glass: hover lift + violet glow + sheen sweep */
+  /* interactive surface: subtle lift + border brighten, no coloured glow */
   .glass-interactive {
     position: relative;
     overflow: hidden;
     transition:
-      transform 350ms var(--liquid),
-      border-color 350ms var(--liquid),
-      box-shadow 350ms var(--liquid),
-      background 350ms var(--liquid);
-  }
-  .glass-interactive::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      115deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.1) 50%,
-      transparent 70%
-    );
-    transform: translateX(-120%);
-    transition: transform 700ms var(--liquid);
-    pointer-events: none;
+      transform 300ms var(--liquid),
+      border-color 300ms var(--liquid),
+      background 300ms var(--liquid);
   }
   .glass-interactive:hover {
-    transform: translateY(-3px);
-    border-color: rgba(139, 92, 246, 0.35);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 16px 40px -16px rgba(124, 58, 237, 0.45),
-      0 0 0 1px rgba(139, 92, 246, 0.15);
-  }
-  .glass-interactive:hover::before {
-    transform: translateX(120%);
-  }
-
-  /* subtle grid lines for hero texture */
-  .grid-bg {
-    background-image:
-      linear-gradient(rgba(124, 58, 237, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124, 58, 237, 0.06) 1px, transparent 1px);
-    background-size: 48px 48px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
-  }
-
-  /* drifting aurora blobs behind content */
-  .aurora {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .aurora::before,
-  .aurora::after {
-    content: "";
-    position: absolute;
-    width: 60vmax;
-    height: 60vmax;
-    border-radius: 9999px;
-    filter: blur(90px);
-    opacity: 0.45;
-    will-change: transform;
-  }
-  .aurora::before {
-    background: radial-gradient(circle at center, rgba(124, 58, 237, 0.45), transparent 60%);
-    top: -22vmax;
-    left: -12vmax;
-    animation: aurora-drift 24s ease-in-out infinite alternate;
-  }
-  .aurora::after {
-    background: radial-gradient(circle at center, rgba(99, 102, 241, 0.4), transparent 60%);
-    bottom: -25vmax;
-    right: -12vmax;
-    animation: aurora-drift 30s ease-in-out infinite alternate-reverse;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .ring-glow {
-    filter: drop-shadow(0 0 14px rgba(124, 58, 237, 0.6));
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
   }
 
-  .text-gradient {
-    background: linear-gradient(120deg, #c4b5fd 0%, #818cf8 45%, #67e8f9 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-}
-
-@keyframes aurora-drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(8vmax, 6vmax, 0) scale(1.15);
+  /* faint monochrome grid texture for hero */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
   }
 }
 

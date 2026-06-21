@@ -53,7 +53,7 @@ export function NotificationBell() {
         >
           <Bell className="h-5 w-5" />
           {unread > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-violet px-1 text-[10px] font-bold text-white">
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-black">
               {unread}
             </span>
           )}
@@ -74,7 +74,7 @@ export function NotificationBell() {
         <DropdownMenuSeparator />
         {items.length === 0 ? (
           <p className="px-3 py-6 text-center text-sm text-muted">
-            You&apos;re all caught up ✨
+            You&apos;re all caught up
           </p>
         ) : (
           items.map((n) => (

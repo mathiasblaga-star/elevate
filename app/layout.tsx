@@ -24,7 +24,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark theme-oled">
       <body
         className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} bg-navy text-ink`}
       >

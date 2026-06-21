@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MOOD_EMOJI, cn } from "@/lib/utils";
+import { MOOD_LABELS, cn } from "@/lib/utils";
 
 type Entry = {
   id: string;
@@ -109,11 +109,13 @@ export default function JournalPage() {
                   className={cn(
                     "flex w-full items-start gap-2 rounded-lg border p-3 text-left transition",
                     selected?.id === e.id
-                      ? "border-violet/40 bg-violet/10"
+                      ? "border-white/30 bg-white/10"
                       : "border-white/5 bg-white/[0.02] hover:bg-white/5"
                   )}
                 >
-                  <span className="text-lg">{MOOD_EMOJI[e.mood - 1]}</span>
+                  <span className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
+                    {MOOD_LABELS[e.mood - 1]}
+                  </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs text-muted">
                       {new Date(e.createdAt).toLocaleDateString()}
@@ -168,19 +170,20 @@ export default function JournalPage() {
 
         <div>
           <p className="mb-2 text-sm text-muted">How are you feeling?</p>
-          <div className="flex gap-2">
-            {MOOD_EMOJI.map((emoji, i) => (
+          <div className="grid grid-cols-5 gap-2">
+            {MOOD_LABELS.map((label, i) => (
               <button
                 key={i}
                 onClick={() => setMood(i + 1)}
                 className={cn(
-                  "flex h-11 w-11 items-center justify-center rounded-lg border text-xl transition",
+                  "flex h-11 flex-col items-center justify-center rounded-lg border text-xs font-medium transition",
                   mood === i + 1
-                    ? "border-violet bg-violet/15"
-                    : "border-white/10 hover:bg-white/5"
+                    ? "border-white/40 bg-white/10 text-foreground"
+                    : "border-white/10 text-muted hover:bg-white/5"
                 )}
               >
-                {emoji}
+                <span className="font-mono text-sm">{i + 1}</span>
+                <span className="text-[10px]">{label}</span>
               </button>
             ))}
           </div>

@@ -34,18 +34,18 @@ export function MoodChart({
         />
         <Tooltip
           contentStyle={{
-            background: "#131929",
+            background: "#1a1a1a",
             border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 8,
-            color: "#F0EEF9",
+            color: "#fafafa",
           }}
         />
         <Line
           type="monotone"
           dataKey="score"
-          stroke="#7C3AED"
+          stroke="#fafafa"
           strokeWidth={2.5}
-          dot={{ r: 3, fill: "#8B5CF6" }}
+          dot={{ r: 3, fill: "#fafafa" }}
           activeDot={{ r: 5 }}
           connectNulls
         />

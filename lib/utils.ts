@@ -13,15 +13,17 @@ export const CATEGORIES = [
   "FINANCE",
 ] as const;
 
+// Monochrome category chips — single accent, no rainbow palette.
 export const CATEGORY_COLORS: Record<string, string> = {
-  HEALTH: "bg-mint/15 text-mint",
-  MINDSET: "bg-violet/15 text-violet-500",
-  PRODUCTIVITY: "bg-sky-500/15 text-sky-400",
-  SOCIAL: "bg-pink-500/15 text-pink-400",
-  FINANCE: "bg-amber/15 text-amber",
+  HEALTH: "bg-white/10 text-foreground",
+  MINDSET: "bg-white/10 text-foreground",
+  PRODUCTIVITY: "bg-white/10 text-foreground",
+  SOCIAL: "bg-white/10 text-foreground",
+  FINANCE: "bg-white/10 text-foreground",
 };
 
-export const MOOD_EMOJI = ["😞", "😕", "😐", "🙂", "😄"]; // index 0-4 -> mood 1-5
+// Text labels for the 1-5 journal mood scale (no emoji).
+export const MOOD_LABELS = ["Awful", "Low", "Okay", "Good", "Great"]; // index 0-4 -> mood 1-5
 
 // ponytail: UTC day boundary everywhere — no per-user timezone (add tz column if users complain)
 export function todayUTC(): Date {

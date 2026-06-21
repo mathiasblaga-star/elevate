@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDashboardStats } from "@/lib/stats";
-import { todayUTC, MOOD_EMOJI } from "@/lib/utils";
+import { todayUTC, MOOD_LABELS } from "@/lib/utils";
 import { LifeScoreRing } from "@/components/LifeScoreRing";
 import { MoodChart } from "@/components/MoodChart";
 import { DashboardHabits } from "@/components/DashboardHabits";
@@ -35,30 +35,14 @@ export default async function DashboardPage() {
   }));
 
   const metrics = [
-    {
-      label: "Active goals",
-      value: stats.activeGoals,
-      icon: Target,
-      tint: "text-violet-500",
-    },
+    { label: "Active goals", value: stats.activeGoals, icon: Target },
     {
       label: "Habits done today",
       value: `${stats.todaysHabitsDone}/${stats.todaysHabitsTotal}`,
       icon: CheckCircle2,
-      tint: "text-mint",
     },
-    {
-      label: "Best streak",
-      value: stats.bestStreak,
-      icon: Flame,
-      tint: "text-amber",
-    },
-    {
-      label: "Avg mood (7d)",
-      value: stats.moodAvg7d || "—",
-      icon: Smile,
-      tint: "text-sky-400",
-    },
+    { label: "Best streak", value: stats.bestStreak, icon: Flame },
+    { label: "Avg mood (7d)", value: stats.moodAvg7d || "—", icon: Smile },
   ];
 
   return (
@@ -77,7 +61,7 @@ export default async function DashboardPage() {
           <Card key={m.label} className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted">{m.label}</span>
-              <m.icon className={`h-4 w-4 ${m.tint}`} />
+              <m.icon className="h-4 w-4 text-muted" />
             </div>
             <p className="mt-2 font-mono text-2xl text-ink">{m.value}</p>
           </Card>
@@ -106,7 +90,7 @@ export default async function DashboardPage() {
                   className="rounded-lg border border-white/5 bg-white/[0.02] p-3"
                 >
                   <div className="mb-1 flex items-center justify-between text-xs text-muted">
-                    <span>{MOOD_EMOJI[j.mood - 1]}</span>
+                    <span className="uppercase tracking-wide">{MOOD_LABELS[j.mood - 1]}</span>
                     <span>{new Date(j.createdAt).toLocaleDateString()}</span>
                   </div>
                   <p className="line-clamp-2 text-sm text-ink/90">{j.content}</p>

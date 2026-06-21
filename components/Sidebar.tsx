@@ -46,8 +46,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ease-liquid",
                   active
-                    ? "bg-gradient-to-r from-violet/25 to-indigo/15 text-violet-500 shadow-glow ring-1 ring-violet/20"
-                    : "text-muted hover:translate-x-0.5 hover:bg-white/5 hover:text-ink"
+                    ? "bg-white/10 text-foreground ring-1 ring-white/15"
+                    : "text-muted hover:translate-x-0.5 hover:bg-white/5 hover:text-foreground"
                 )}
               >
                 <Icon className="h-4 w-4" />

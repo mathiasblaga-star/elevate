@@ -36,7 +36,7 @@ export function SettingsClient({ user }: { user: User }) {
   const router = useRouter();
 
   const [name, setName] = useState(user.name ?? "");
-  const [avatar, setAvatar] = useState(user.avatar ?? "#7C3AED");
+  const [avatar, setAvatar] = useState(user.avatar ?? "#262626");
   const [profileMsg, setProfileMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   const [current, setCurrent] = useState("");

@@ -34,9 +34,8 @@ export function LifeScoreRing({
     >
       <defs>
         <linearGradient id="lifeScoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="55%" stopColor="#6366F1" />
-          <stop offset="100%" stopColor="#67E8F9" />
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#a3a3a3" />
         </linearGradient>
       </defs>
       <circle

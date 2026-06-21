@@ -9,19 +9,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#0A0F1E",
-        ink: "#F0EEF9",
-        violet: { DEFAULT: "#7C3AED", 600: "#7C3AED", 500: "#8B5CF6" },
-        indigo: { DEFAULT: "#6366F1", 400: "#818CF8" },
-        cyan: { 300: "#67E8F9" },
-        mint: "#10B981",
-        amber: "#F59E0B",
-        card: "#131929",
-        // semantic aliases used across UI primitives
-        background: "#0A0F1E",
-        foreground: "#F0EEF9",
-        muted: "#9CA3AF",
+        // jet-black monochrome system
+        black: "#0a0a0a",
+        surface: "#111111",
+        card: "#1a1a1a",
+        foreground: "#fafafa",
+        muted: "#9ca3af",
         border: "rgba(255,255,255,0.08)",
+        background: "#0a0a0a",
+        // single accent, driven by --accent CSS var (white by default, user-customisable)
+        accent: "rgb(var(--accent) / <alpha-value>)",
+        // legacy token names remapped to monochrome so existing classes retheme automatically
+        navy: "#0a0a0a",
+        ink: "#fafafa",
+        violet: {
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          600: "rgb(var(--accent) / <alpha-value>)",
+          500: "rgb(var(--accent) / <alpha-value>)",
+        },
+        indigo: { DEFAULT: "rgb(var(--accent) / <alpha-value>)", 400: "#a3a3a3" },
+        cyan: { 300: "#e5e5e5" },
+        mint: "#e5e5e5",
+        amber: "#a3a3a3",
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
@@ -35,8 +44,9 @@ const config: Config = {
         xl: "12px",
       },
       boxShadow: {
-        glow: "0 8px 30px -8px rgba(124, 58, 237, 0.5)",
-        "glow-lg": "0 16px 50px -12px rgba(124, 58, 237, 0.6)",
+        // soft, neutral depth — no harsh/coloured shadows
+        glow: "0 4px 24px -8px rgba(0,0,0,0.7)",
+        "glow-lg": "0 8px 40px -10px rgba(0,0,0,0.8)",
       },
       transitionTimingFunction: {
         liquid: "cubic-bezier(0.22, 1, 0.36, 1)",

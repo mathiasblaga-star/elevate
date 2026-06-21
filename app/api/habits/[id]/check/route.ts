@@ -52,7 +52,7 @@ export async function POST(
       data: {
         userId,
         type: "STREAK",
-        message: `🔥 ${streak}-day streak on ${habit.name}!`,
+        message: `${streak}-day streak on ${habit.name}!`,
       },
     });
   }

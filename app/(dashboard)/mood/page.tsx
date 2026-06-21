@@ -15,8 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-const EMOJI = ["😣", "😞", "😕", "😐", "🙂", "😊", "😄", "😁", "🤩", "🥳"]; // score 1-10
-const moodEmoji = (s: number) => EMOJI[Math.max(1, Math.min(10, s)) - 1];
+// 1-10 mood scale, text labels (no emoji)
+const MOOD_SCALE = [
+  "Awful", "Bad", "Low", "Meh", "Okay", "Fine", "Good", "Great", "Amazing", "Euphoric",
+];
+const moodLabel = (s: number) => MOOD_SCALE[Math.max(1, Math.min(10, s)) - 1];
 
 type Mood = { score: number; createdAt: string };
 
@@ -62,8 +65,8 @@ export default function MoodPage() {
 
       <Card className="space-y-6">
         <div className="text-center">
-          <div className="text-6xl">{moodEmoji(score)}</div>
-          <p className="mt-2 font-mono text-2xl text-ink">{score}/10</p>
+          <p className="font-display text-5xl text-foreground">{moodLabel(score)}</p>
+          <p className="mt-2 font-mono text-2xl text-muted">{score}/10</p>
         </div>
         <Slider
           min={1}
@@ -92,9 +95,8 @@ export default function MoodPage() {
             <AreaChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="moodGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10B981" stopOpacity={0.7} />
-                  <stop offset="50%" stopColor="#F59E0B" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="#EF4444" stopOpacity={0.3} />
+                  <stop offset="0%" stopColor="#ffffff" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -113,16 +115,16 @@ export default function MoodPage() {
               />
               <Tooltip
                 contentStyle={{
-                  background: "#131929",
+                  background: "#1a1a1a",
                   border: "1px solid rgba(255,255,255,0.1)",
                   borderRadius: 8,
-                  color: "#F0EEF9",
+                  color: "#fafafa",
                 }}
               />
               <Area
                 type="monotone"
                 dataKey="score"
-                stroke="#10B981"
+                stroke="#fafafa"
                 strokeWidth={2}
                 fill="url(#moodGrad)"
               />

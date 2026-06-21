@@ -8,7 +8,6 @@ export default function AuthLayout({
 }) {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
-      <div className="aurora" />
       <div className="absolute inset-0 grid-bg opacity-60" />
       <Link
         href="/"
