@@ -16,8 +16,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Plus } from "lucide-react";
+import { Plus, LayoutGrid, Grid2x2, Wand2 } from "lucide-react";
 import { GoalCard, type Goal } from "@/components/GoalCard";
+import { PriorityMatrix } from "@/components/PriorityMatrix";
+import { GOAL_TEMPLATES } from "@/lib/goalTemplates";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -129,6 +131,29 @@ export default function GoalsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Goal | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [view, setView] = useState<"board" | "matrix">("board");
+  const [tplOpen, setTplOpen] = useState(false);
+
+  async function moveQuadrant(id: string, urgency: number, importance: number) {
+    setGoals((gs) => gs.map((g) => (g.id === id ? { ...g, urgency, importance } : g)));
+    await fetch("/api/goals", {
+      method: "PATCH",
+      headers: HEADERS,
+      body: JSON.stringify({ id, urgency, importance }),
+    });
+  }
+
+  async function cloneTemplate(template: string) {
+    const r = await fetch("/api/goals/template", {
+      method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify({ template }),
+    });
+    if (r.ok) {
+      setTplOpen(false);
+      await load();
+    }
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -257,31 +282,60 @@ export default function GoalsPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-4xl text-ink">Goals</h1>
-        <Button onClick={openNew}>
-          <Plus className="h-4 w-4" /> Add goal
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-lg border border-white/10 p-0.5">
+            <button
+              onClick={() => setView("board")}
+              aria-pressed={view === "board"}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition ${
+                view === "board" ? "bg-white/10 text-foreground" : "text-muted hover:text-foreground"
+              }`}
+            >
+              <LayoutGrid className="h-4 w-4" /> Board
+            </button>
+            <button
+              onClick={() => setView("matrix")}
+              aria-pressed={view === "matrix"}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition ${
+                view === "matrix" ? "bg-white/10 text-foreground" : "text-muted hover:text-foreground"
+              }`}
+            >
+              <Grid2x2 className="h-4 w-4" /> Matrix
+            </button>
+          </div>
+          <Button variant="secondary" onClick={() => setTplOpen(true)}>
+            <Wand2 className="h-4 w-4" /> Templates
+          </Button>
+          <Button onClick={openNew}>
+            <Plus className="h-4 w-4" /> Add goal
+          </Button>
+        </div>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragEnd={onDragEnd}
-      >
-        <div className="grid gap-4 md:grid-cols-3">
-          {COLUMNS.map((c) => (
-            <Column
-              key={c.status}
-              status={c.status}
-              title={c.title}
-              goals={colItems(c.status)}
-              onEdit={openEdit}
-              onDelete={del}
-            />
-          ))}
-        </div>
-      </DndContext>
+      {view === "board" ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragEnd={onDragEnd}
+        >
+          <div className="grid gap-4 md:grid-cols-3">
+            {COLUMNS.map((c) => (
+              <Column
+                key={c.status}
+                status={c.status}
+                title={c.title}
+                goals={colItems(c.status)}
+                onEdit={openEdit}
+                onDelete={del}
+              />
+            ))}
+          </div>
+        </DndContext>
+      ) : (
+        <PriorityMatrix goals={goals} onMove={moveQuadrant} />
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -366,6 +420,28 @@ export default function GoalsPage() {
             <Button onClick={submit} className="w-full">
               {editing ? "Save changes" : "Create goal"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={tplOpen} onOpenChange={setTplOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Start from a template</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            {GOAL_TEMPLATES.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => cloneTemplate(t.key)}
+                className="w-full rounded-lg border border-white/10 bg-white/[0.02] p-3 text-left transition hover:bg-white/5"
+              >
+                <p className="font-medium text-foreground">{t.title}</p>
+                <p className="text-xs text-muted">
+                  {t.weeks} weeks · {t.milestones.length} milestones · {t.category}
+                </p>
+              </button>
+            ))}
           </div>
         </DialogContent>
       </Dialog>

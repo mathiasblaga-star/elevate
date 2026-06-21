@@ -40,6 +40,8 @@ export const goalUpdateSchema = z.object({
   status: GoalStatusEnum.optional(),
   progress: z.number().int().min(0).max(100).optional(),
   order: z.number().int().optional(),
+  urgency: z.number().int().min(0).max(1).optional(),
+  importance: z.number().int().min(0).max(1).optional(),
 });
 
 export const habitCreateSchema = z.object({
@@ -71,6 +73,20 @@ export const journalUpdateSchema = z.object({
 export const moodSchema = z.object({
   score: z.number().int().min(1).max(10),
   note: z.string().max(500).optional().nullable(),
+});
+
+export const pomodoroSchema = z.object({
+  minutes: z.number().int().min(1).max(180),
+  goalId: z.string().min(1).optional().nullable(),
+});
+
+export const goalTemplateSchema = z.object({
+  template: z.string().min(1).max(40),
+});
+
+export const milestoneToggleSchema = z.object({
+  milestoneId: z.string().min(1),
+  completed: z.boolean(),
 });
 
 export const profileSchema = z.object({

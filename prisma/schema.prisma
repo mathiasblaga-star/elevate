@@ -87,6 +87,7 @@ model Goal {
   progress   Int        @default(0) // 0-100
   order      Int        @default(0)
   createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt @default(now())
 
   // priority matrix + templates
   urgency    Int? // 0/1 quadrant axis

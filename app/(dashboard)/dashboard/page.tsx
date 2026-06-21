@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDashboardStats } from "@/lib/stats";
@@ -51,6 +52,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
+      <div className="flex justify-end">
+        <Link
+          href="/review"
+          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-muted transition hover:text-foreground"
+        >
+          Weekly review →
+        </Link>
+      </div>
+
       {/* Life score ring + radar breakdown */}
       <section className="grid items-center gap-6 md:grid-cols-2">
         <div className="flex flex-col items-center gap-2 pt-2">

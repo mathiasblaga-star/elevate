@@ -9,6 +9,7 @@ import {
   Target,
   BookOpen,
   Smile,
+  Timer,
   User,
   Settings,
   LogOut,
@@ -22,6 +23,7 @@ const NAV = [
   { href: "/goals", label: "Goals", icon: Target },
   { href: "/journal", label: "Journal", icon: BookOpen },
   { href: "/mood", label: "Mood", icon: Smile },
+  { href: "/focus", label: "Focus", icon: Timer },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
@@ -68,7 +70,7 @@ export function Sidebar() {
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 z-30 flex w-full items-center justify-around border-t border-white/10 bg-card/80 px-2 py-2 backdrop-blur-xl md:hidden">
+      <nav className="fixed bottom-0 left-0 z-30 flex w-full items-center gap-1 overflow-x-auto border-t border-white/10 bg-card/80 px-2 py-2 backdrop-blur-xl md:hidden">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -77,8 +79,8 @@ export function Sidebar() {
               href={href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-col items-center gap-0.5 rounded-md px-2 py-1 text-[10px] transition-colors duration-300",
-                active ? "text-violet-500" : "text-muted"
+                "flex shrink-0 flex-1 flex-col items-center gap-0.5 rounded-md px-2 py-1 text-[10px] transition-colors duration-300",
+                active ? "text-foreground" : "text-muted"
               )}
             >
               <Icon className="h-5 w-5" />

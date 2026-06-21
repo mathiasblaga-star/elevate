@@ -22,16 +22,25 @@ const MOOD_SCALE = [
 const moodLabel = (s: number) => MOOD_SCALE[Math.max(1, Math.min(10, s)) - 1];
 
 type Mood = { score: number; createdAt: string };
+type Insights = {
+  correlation: { habit: string; withAvg: number; withoutAvg: number; lift: number } | null;
+  prediction: { estimate: number; reason: string } | null;
+};
 
 export default function MoodPage() {
   const [score, setScore] = useState(7);
   const [note, setNote] = useState("");
   const [moods, setMoods] = useState<Mood[]>([]);
   const [saving, setSaving] = useState(false);
+  const [insights, setInsights] = useState<Insights | null>(null);
 
   async function load() {
-    const r = await fetch("/api/mood");
-    if (r.ok) setMoods((await r.json()).moods);
+    const [m, i] = await Promise.all([
+      fetch("/api/mood"),
+      fetch("/api/mood/insights"),
+    ]);
+    if (m.ok) setMoods((await m.json()).moods);
+    if (i.ok) setInsights(await i.json());
   }
   useEffect(() => {
     load();
@@ -85,6 +94,40 @@ export default function MoodPage() {
           {saving ? "Logging…" : "Log mood"}
         </Button>
       </Card>
+
+      {insights && (insights.correlation || insights.prediction) && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {insights.prediction && (
+            <Card>
+              <h2 className="font-display text-xl text-ink">Tomorrow&apos;s outlook</h2>
+              <p className="mt-2 font-mono text-3xl text-foreground">
+                ~{insights.prediction.estimate}/10
+              </p>
+              <p className="mt-1 text-sm text-muted">{insights.prediction.reason}</p>
+            </Card>
+          )}
+          {insights.correlation && (
+            <Card>
+              <h2 className="font-display text-xl text-ink">Mood &amp; habits</h2>
+              <p className="mt-2 text-sm text-muted">
+                Your mood averages{" "}
+                <span className="font-mono text-foreground">
+                  {insights.correlation.withAvg}
+                </span>{" "}
+                on days you complete{" "}
+                <span className="text-foreground">{insights.correlation.habit}</span>, vs{" "}
+                <span className="font-mono text-foreground">
+                  {insights.correlation.withoutAvg}
+                </span>{" "}
+                when you don&apos;t
+                {insights.correlation.lift > 0
+                  ? ` — a +${insights.correlation.lift} lift.`
+                  : "."}
+              </p>
+            </Card>
+          )}
+        </div>
+      )}
 
       <Card>
         <h2 className="mb-3 font-display text-2xl text-ink">Mood history</h2>
