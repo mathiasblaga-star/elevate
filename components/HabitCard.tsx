@@ -29,7 +29,7 @@ export function HabitCard({
   busy?: boolean;
 }) {
   return (
-    <div className="glass flex flex-wrap items-center gap-3 p-4">
+    <div className="glass glass-interactive flex flex-wrap items-center gap-3 p-4">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <h3 className="truncate font-medium text-ink">{habit.name}</h3>

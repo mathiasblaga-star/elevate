@@ -19,13 +19,14 @@ export default async function DashboardLayout({
   const initial = (user?.name ?? user?.email ?? "?")[0]?.toUpperCase() ?? "?";
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="aurora opacity-40" />
       <Sidebar />
-      <div className="md:pl-60">
+      <div className="relative md:pl-60">
         <header className="sticky top-0 z-20 flex items-center justify-end gap-3 border-b border-white/10 bg-navy/70 px-4 py-3 backdrop-blur-xl md:px-8">
           <NotificationBell />
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-white ring-1 ring-white/15 transition-transform duration-300 ease-liquid hover:scale-105"
             style={{ background: user?.avatar ?? "#7C3AED" }}
             title={user?.name ?? user?.email ?? ""}
           >

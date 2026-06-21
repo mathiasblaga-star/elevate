@@ -26,7 +26,7 @@ export function GoalCard({
   dragHandleProps?: Record<string, unknown>;
 }) {
   return (
-    <div className="glass p-4">
+    <div className="glass glass-interactive p-4">
       <div className="flex items-start gap-2">
         <button
           {...dragHandleProps}
@@ -73,7 +73,7 @@ export function GoalCard({
         </div>
         <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-violet transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo transition-all duration-500 ease-liquid"
             style={{ width: `${goal.progress}%` }}
           />
         </div>

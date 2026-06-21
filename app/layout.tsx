@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     "Track every dimension of your life — habits, goals, mood, and growth — in one place.",
 };
 
+// Strict nonce CSP (middleware) requires per-request rendering so Next can inject the
+// nonce into its <script> tags — static prerendered pages can't carry a per-request nonce.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

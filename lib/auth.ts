@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { authConfig } from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validations";
+import { rateLimit } from "@/lib/ratelimit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -36,6 +37,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorize: async (creds) => {
         const parsed = loginSchema.safeParse(creds);
         if (!parsed.success) return null;
+        // ponytail: per-email throttle (5/60s). IP-keying needs the request, not exposed in
+        // authorize — add a thin /api/auth login proxy if IP limits matter.
+        const { success } = await rateLimit(`login:${parsed.data.email.toLowerCase()}`);
+        if (!success) return null;
         const user = await prisma.user.findUnique({
           where: { email: parsed.data.email },
         });

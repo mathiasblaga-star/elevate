@@ -58,8 +58,9 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
+        <div className="aurora" />
         <div className="absolute inset-0 grid-bg" />
-        <header className="absolute left-0 top-0 flex w-full items-center justify-between px-6 py-5">
+        <header className="absolute left-0 top-0 z-10 flex w-full items-center justify-between px-6 py-5">
           <div className="flex items-center gap-2">
             <Logo className="h-6 w-6 text-ink" />
             <span className="font-display text-2xl text-ink">Elevate</span>
@@ -75,17 +76,19 @@ export default function Home() {
         </header>
 
         <div className="relative flex flex-col items-center gap-8">
-          <LifeScoreRing score={78} size={200} />
-          <div className="space-y-4">
-            <h1 className="font-display text-6xl leading-none text-ink md:text-8xl">
-              Live at full capacity.
+          <div className="animate-fade-in-up">
+            <LifeScoreRing score={78} size={200} />
+          </div>
+          <div className="space-y-4 animate-fade-in-up [animation-delay:120ms]">
+            <h1 className="font-display text-6xl leading-none md:text-8xl">
+              <span className="text-gradient">Live at full capacity.</span>
             </h1>
             <p className="mx-auto max-w-xl text-lg text-muted">
               Track every dimension of your life — habits, goals, mood, and
               growth — in one place.
             </p>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 animate-fade-in-up [animation-delay:240ms]">
             <Button asChild size="lg">
               <Link href="/register">
                 Start free <ArrowRight className="h-4 w-4" />
@@ -104,9 +107,15 @@ export default function Home() {
           Everything in one place
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="glass p-6">
-              <f.icon className="h-7 w-7 text-violet-500" />
+          {FEATURES.map((f, i) => (
+            <div
+              key={f.title}
+              className="glass glass-interactive p-6 animate-fade-in-up"
+              style={{ animationDelay: `${i * 90}ms` }}
+            >
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet/30 to-indigo/20 ring-1 ring-white/10">
+                <f.icon className="h-6 w-6 text-violet-500" />
+              </div>
               <h3 className="mt-4 text-lg font-semibold text-ink">{f.title}</h3>
               <p className="mt-2 text-sm text-muted">{f.desc}</p>
             </div>
@@ -120,17 +129,41 @@ export default function Home() {
           Loved by people building better days
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="glass p-6">
+          {TESTIMONIALS.map((t, i) => (
+            <div
+              key={t.name}
+              className="glass glass-interactive p-6 animate-fade-in-up"
+              style={{ animationDelay: `${i * 90}ms` }}
+            >
               <p className="text-ink/90">&ldquo;{t.quote}&rdquo;</p>
               <div className="mt-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet/20 text-sm font-semibold text-violet-500">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet/30 to-indigo/20 text-sm font-semibold text-violet-500 ring-1 ring-white/10">
                   {t.initials}
                 </div>
                 <span className="text-sm font-medium text-ink">{t.name}</span>
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* CTA band */}
+      <section className="mx-auto max-w-5xl px-4 pb-24">
+        <div className="glass relative overflow-hidden p-10 text-center sm:p-16">
+          <div className="aurora opacity-70" />
+          <div className="relative space-y-6">
+            <h2 className="font-display text-4xl text-ink md:text-5xl">
+              <span className="text-gradient">Ready to elevate?</span>
+            </h2>
+            <p className="mx-auto max-w-md text-muted">
+              Start tracking what matters today — free, no card required.
+            </p>
+            <Button asChild size="lg">
+              <Link href="/register">
+                Start free <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -142,13 +175,13 @@ export default function Home() {
             <span className="font-display text-xl text-ink">Elevate</span>
           </div>
           <nav className="flex gap-6 text-sm text-muted">
-            <Link href="/login" className="hover:text-ink">
+            <Link href="/login" className="transition-colors hover:text-ink">
               Log in
             </Link>
-            <Link href="/register" className="hover:text-ink">
+            <Link href="/register" className="transition-colors hover:text-ink">
               Start free
             </Link>
-            <a href="#features" className="hover:text-ink">
+            <a href="#features" className="transition-colors hover:text-ink">
               Features
             </a>
           </nav>

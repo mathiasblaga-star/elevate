@@ -1,6 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 
-const PROTECTED = ["/dashboard", "/habits", "/goals", "/journal", "/mood", "/settings"];
+export const PROTECTED = ["/dashboard", "/habits", "/goals", "/journal", "/mood", "/settings"];
 
 // Edge-safe config (no DB / bcrypt imports) — shared by middleware and the full auth instance.
 export const authConfig = {

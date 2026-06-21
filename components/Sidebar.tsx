@@ -42,11 +42,12 @@ export function Sidebar() {
               <Link
                 key={href}
                 href={href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ease-liquid",
                   active
-                    ? "bg-violet/15 text-violet-500"
-                    : "text-muted hover:bg-white/5 hover:text-ink"
+                    ? "bg-gradient-to-r from-violet/25 to-indigo/15 text-violet-500 shadow-glow ring-1 ring-violet/20"
+                    : "text-muted hover:translate-x-0.5 hover:bg-white/5 hover:text-ink"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -57,7 +58,7 @@ export function Sidebar() {
         </nav>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/5 hover:text-ink"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-all duration-300 ease-liquid hover:translate-x-0.5 hover:bg-white/5 hover:text-ink"
         >
           <LogOut className="h-4 w-4" />
           Sign out
@@ -72,8 +73,9 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-col items-center gap-0.5 rounded-md px-2 py-1 text-[10px]",
+                "flex flex-col items-center gap-0.5 rounded-md px-2 py-1 text-[10px] transition-colors duration-300",
                 active ? "text-violet-500" : "text-muted"
               )}
             >

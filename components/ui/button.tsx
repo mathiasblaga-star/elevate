@@ -4,15 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/60 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-300 ease-liquid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/60 focus-visible:ring-offset-2 focus-visible:ring-offset-navy active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-violet text-white hover:bg-violet/90",
-        secondary: "bg-white/5 text-ink hover:bg-white/10 border border-white/10",
-        outline: "border border-white/15 text-ink hover:bg-white/5",
+        default:
+          "bg-gradient-to-r from-violet to-indigo text-white shadow-glow hover:-translate-y-0.5 hover:shadow-glow-lg",
+        secondary: "bg-white/5 text-ink hover:bg-white/10 hover:-translate-y-0.5 border border-white/10",
+        outline: "border border-white/15 text-ink hover:bg-white/5 hover:border-white/25",
         ghost: "text-ink hover:bg-white/5",
-        destructive: "bg-red-600 text-white hover:bg-red-500",
+        destructive: "bg-red-600 text-white hover:bg-red-500 hover:-translate-y-0.5 active:scale-[0.97]",
         link: "text-violet-500 underline-offset-4 hover:underline",
       },
       size: {

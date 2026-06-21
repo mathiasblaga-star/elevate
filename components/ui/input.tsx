@@ -9,7 +9,7 @@ const Input = React.forwardRef<
     type={type}
     ref={ref}
     className={cn(
-      "flex h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50 disabled:cursor-not-allowed disabled:opacity-50",
+      "flex h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-ink placeholder:text-muted transition-all duration-200 ease-liquid hover:border-white/20 focus-visible:border-violet/40 focus-visible:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/40 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
