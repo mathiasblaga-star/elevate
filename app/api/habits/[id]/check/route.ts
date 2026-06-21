@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getUserId, unauthorized, notFound } from "@/lib/api";
+import { getUserId, unauthorized, notFound, tooManyRequests } from "@/lib/api";
 import { todayUTC, currentStreak } from "@/lib/utils";
+import { rateLimitApi } from "@/lib/ratelimit";
+import { awardXp, XP_AWARD } from "@/lib/xp";
+import { awardBadges } from "@/lib/badges";
 
 const MILESTONES = [3, 7, 14, 30];
 
@@ -12,6 +15,8 @@ export async function POST(
 ) {
   const userId = await getUserId();
   if (!userId) return unauthorized();
+  const { success } = await rateLimitApi(`habit:${userId}`);
+  if (!success) return tooManyRequests();
 
   const habit = await prisma.habit.findFirst({
     where: { id: params.id, userId },
@@ -57,5 +62,22 @@ export async function POST(
     });
   }
 
-  return NextResponse.json({ completed, streak, longestStreak, milestone });
+  // Award XP + re-check badges only when completing (not when un-checking).
+  let xpState: { xp: number; level: number; leveledUp: boolean } | null = null;
+  let badges: string[] = [];
+  if (completed) {
+    xpState = await awardXp(userId, XP_AWARD.HABIT);
+    badges = await awardBadges(userId);
+  }
+
+  return NextResponse.json({
+    completed,
+    streak,
+    longestStreak,
+    milestone,
+    xp: xpState?.xp,
+    level: xpState?.level,
+    leveledUp: xpState?.leveledUp ?? false,
+    badges,
+  });
 }

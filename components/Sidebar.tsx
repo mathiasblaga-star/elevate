@@ -9,6 +9,7 @@ import {
   Target,
   BookOpen,
   Smile,
+  User,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/goals", label: "Goals", icon: Target },
   { href: "/journal", label: "Journal", icon: BookOpen },
   { href: "/mood", label: "Mood", icon: Smile },
+  { href: "/profile", label: "Profile", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

@@ -6,8 +6,12 @@ import {
   badRequest,
   notFound,
   zodErrors,
+  tooManyRequests,
 } from "@/lib/api";
 import { journalCreateSchema, journalUpdateSchema } from "@/lib/validations";
+import { rateLimitApi } from "@/lib/ratelimit";
+import { awardXp, XP_AWARD } from "@/lib/xp";
+import { awardBadges } from "@/lib/badges";
 
 const PAGE_SIZE = 10;
 
@@ -36,13 +40,17 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const userId = await getUserId();
   if (!userId) return unauthorized();
+  const { success } = await rateLimitApi(`journal:${userId}`);
+  if (!success) return tooManyRequests();
   const body = await req.json().catch(() => null);
   const parsed = journalCreateSchema.safeParse(body);
   if (!parsed.success) return badRequest(zodErrors(parsed.error));
   const entry = await prisma.journalEntry.create({
     data: { userId, ...parsed.data },
   });
-  return NextResponse.json({ entry }, { status: 201 });
+  const { xp, level, leveledUp } = await awardXp(userId, XP_AWARD.JOURNAL);
+  const badges = await awardBadges(userId);
+  return NextResponse.json({ entry, xp, level, leveledUp, badges }, { status: 201 });
 }
 
 export async function PATCH(req: Request) {
