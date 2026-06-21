@@ -7,14 +7,22 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { normalizeWeights, DEFAULT_WEIGHTS } from "@/lib/lifeScore";
 
 type User = {
   name: string | null;
   email: string;
   avatar: string | null;
   emailDigest: boolean;
+  theme: string;
+  accent: string;
+  lifeScoreWeights: unknown;
 };
+
+const WEIGHT_KEYS = ["habits", "goals", "mood", "journal"] as const;
+type WeightKey = (typeof WEIGHT_KEYS)[number];
 
 function Note({ msg }: { msg: { type: "ok" | "err"; text: string } | null }) {
   if (!msg) return null;
@@ -23,7 +31,7 @@ function Note({ msg }: { msg: { type: "ok" | "err"; text: string } | null }) {
       className={cn(
         "rounded-md px-3 py-2 text-sm",
         msg.type === "ok"
-          ? "bg-mint/10 text-mint"
+          ? "bg-white/10 text-foreground"
           : "bg-red-500/10 text-red-400"
       )}
     >
@@ -45,6 +53,42 @@ export function SettingsClient({ user }: { user: User }) {
   const [pwMsg, setPwMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   const [digest, setDigest] = useState(user.emailDigest);
+
+  // Life Score weights as integer percentages (0-100) for the sliders.
+  const initialWeights = normalizeWeights(
+    (user.lifeScoreWeights as Partial<Record<WeightKey, number>>) ?? null
+  );
+  const [weights, setWeights] = useState<Record<WeightKey, number>>({
+    habits: Math.round(initialWeights.habits * 100),
+    goals: Math.round(initialWeights.goals * 100),
+    mood: Math.round(initialWeights.mood * 100),
+    journal: Math.round(initialWeights.journal * 100),
+  });
+  const [weightsMsg, setWeightsMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const weightTotal = WEIGHT_KEYS.reduce((s, k) => s + weights[k], 0);
+
+  async function saveWeights() {
+    setWeightsMsg(null);
+    // send as fractions; server re-normalises
+    const r = await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lifeScoreWeights: {
+          habits: weights.habits,
+          goals: weights.goals,
+          mood: weights.mood,
+          journal: weights.journal,
+        },
+      }),
+    });
+    setWeightsMsg(
+      r.ok
+        ? { type: "ok", text: "Weighting saved" }
+        : { type: "err", text: "Could not save weighting" }
+    );
+    if (r.ok) router.refresh();
+  }
 
   const [confirmDelete, setConfirmDelete] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -167,6 +211,53 @@ export function SettingsClient({ user }: { user: User }) {
         <Button onClick={changePassword}>Change password</Button>
       </Card>
 
+      {/* Life Score weighting */}
+      <Card className="space-y-4">
+        <div>
+          <h2 className="font-display text-2xl text-ink">Life Score weighting</h2>
+          <p className="text-sm text-muted">
+            Decide how much each dimension counts toward your Life Score. Values are
+            normalised, so they don&apos;t need to sum to 100.
+          </p>
+        </div>
+        {WEIGHT_KEYS.map((k) => (
+          <div key={k} className="space-y-1.5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="capitalize text-foreground">{k}</span>
+              <span className="font-mono text-muted">
+                {weightTotal > 0 ? Math.round((weights[k] / weightTotal) * 100) : 0}%
+              </span>
+            </div>
+            <Slider
+              min={0}
+              max={100}
+              step={5}
+              value={[weights[k]]}
+              onValueChange={(v) => setWeights((w) => ({ ...w, [k]: v[0] }))}
+            />
+          </div>
+        ))}
+        <Note msg={weightsMsg} />
+        <div className="flex gap-2">
+          <Button onClick={saveWeights} disabled={weightTotal === 0}>
+            Save weighting
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() =>
+              setWeights({
+                habits: DEFAULT_WEIGHTS.habits * 100,
+                goals: DEFAULT_WEIGHTS.goals * 100,
+                mood: DEFAULT_WEIGHTS.mood * 100,
+                journal: DEFAULT_WEIGHTS.journal * 100,
+              })
+            }
+          >
+            Reset to default
+          </Button>
+        </div>
+      </Card>
+
       {/* Notifications */}
       <Card className="flex items-center justify-between">
         <div>
@@ -178,14 +269,14 @@ export function SettingsClient({ user }: { user: User }) {
           role="switch"
           aria-checked={digest}
           className={cn(
-            "relative h-6 w-11 rounded-full transition",
-            digest ? "bg-violet" : "bg-white/15"
+            "relative h-6 w-11 rounded-full transition-colors duration-300",
+            digest ? "bg-white/90" : "bg-white/15"
           )}
         >
           <span
             className={cn(
-              "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all",
-              digest ? "left-[22px]" : "left-0.5"
+              "absolute top-0.5 h-5 w-5 rounded-full transition-all duration-300",
+              digest ? "left-[22px] bg-black" : "left-0.5 bg-white"
             )}
           />
         </button>

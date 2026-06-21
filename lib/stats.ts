@@ -1,9 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { lifeScore } from "@/lib/lifeScore";
+import {
+  lifeScoreBreakdown,
+  normalizeWeights,
+  type LifeScoreWeights,
+} from "@/lib/lifeScore";
 import { todayUTC, dayKey, currentStreak } from "@/lib/utils";
 
 export interface DashboardStats {
   lifeScore: number;
+  scoreBreakdown: LifeScoreWeights; // per-category normalised 0-100 (for radar)
+  weights: LifeScoreWeights; // active weighting (fractions)
   habitCompletionRate: number; // 0-100
   activeGoals: number;
   todaysHabitsDone: number;
@@ -21,7 +27,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   const fourteenDaysAgo = new Date(today);
   fourteenDaysAgo.setUTCDate(today.getUTCDate() - 13);
 
-  const [habits, todaysEntries, goals, recentMoods, journalDates] =
+  const [habits, todaysEntries, goals, recentMoods, journalDates, user] =
     await Promise.all([
       prisma.habit.findMany({ where: { userId }, select: { streak: true } }),
       prisma.habitEntry.count({ where: { userId, date: today, completed: true } }),
@@ -37,6 +43,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
         orderBy: { createdAt: "desc" },
         take: 200,
       }),
+      prisma.user.findUnique({ where: { id: userId }, select: { lifeScoreWeights: true } }),
     ]);
 
   const todaysHabitsTotal = habits.length;
@@ -76,15 +83,23 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
     moodSeries.push({ date: k.slice(5), score: b ? Math.round((b.sum / b.n) * 10) / 10 : 0 });
   }
 
-  const score = lifeScore({
-    habitCompletionRate,
-    goalProgressAvg,
-    moodAvg: moodAvg7d,
-    journalStreak: jStreak,
-  });
+  const weights = normalizeWeights(
+    (user?.lifeScoreWeights as Partial<LifeScoreWeights> | null) ?? null
+  );
+  const breakdown = lifeScoreBreakdown(
+    {
+      habitCompletionRate,
+      goalProgressAvg,
+      moodAvg: moodAvg7d,
+      journalStreak: jStreak,
+    },
+    weights
+  );
 
   return {
-    lifeScore: score,
+    lifeScore: breakdown.total,
+    scoreBreakdown: breakdown.categories,
+    weights,
     habitCompletionRate,
     activeGoals,
     todaysHabitsDone,

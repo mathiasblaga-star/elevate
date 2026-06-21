@@ -39,6 +39,11 @@ enum NotifType {
   REMINDER
 }
 
+enum PartnerStatus {
+  PENDING
+  ACCEPTED
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -49,12 +54,27 @@ model User {
   emailDigest  Boolean  @default(false)
   createdAt    DateTime @default(now())
 
+  // gamification
+  xp                 Int @default(0)
+  level              Int @default(1)
+  streakFreezeTokens Int @default(0)
+
+  // personalisation
+  theme            String @default("oled") // oled | dark
+  accent           String @default("#ffffff")
+  lifeScoreWeights Json? // { habits, goals, mood, journal } — fractions summing to 1
+
   goals         Goal[]
   habits        Habit[]
   habitEntries  HabitEntry[]
   journal       JournalEntry[]
   moods         MoodLog[]
   notifications Notification[]
+  routines      HabitRoutine[]
+  badges        UserBadge[]
+  milestones    GoalMilestone[]
+  pomodoros     PomodoroSession[]
+  partnerships  Partnership[]     @relation("requester")
 }
 
 model Goal {
@@ -68,23 +88,67 @@ model Goal {
   order      Int        @default(0)
   createdAt  DateTime   @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // priority matrix + templates
+  urgency    Int? // 0/1 quadrant axis
+  importance Int? // 0/1 quadrant axis
+  template   String?
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestones GoalMilestone[]
 
   @@index([userId])
 }
 
-model Habit {
-  id           String    @id @default(cuid())
-  userId       String
-  name         String
-  frequency    Frequency @default(DAILY)
-  streak       Int       @default(0)
-  longestStreak Int      @default(0)
-  category     Category  @default(HEALTH)
-  createdAt    DateTime  @default(now())
+model GoalMilestone {
+  id        String    @id @default(cuid())
+  goalId    String
+  userId    String
+  title     String
+  dueDate   DateTime?
+  completed Boolean   @default(false)
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
 
-  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@index([userId])
+}
+
+model Habit {
+  id            String    @id @default(cuid())
+  userId        String
+  name          String
+  frequency     Frequency @default(DAILY)
+  streak        Int       @default(0)
+  longestStreak Int       @default(0)
+  category      Category  @default(HEALTH)
+  createdAt     DateTime  @default(now())
+
+  // personalisation + stacking
+  icon           String?
+  color          String?
+  reminderTime   String? // "HH:MM" local
+  routineId      String?
+  orderInRoutine Int?
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries HabitEntry[]
+  routine HabitRoutine? @relation(fields: [routineId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+model HabitRoutine {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habits Habit[]
 
   @@index([userId])
 }
@@ -127,6 +191,45 @@ model MoodLog {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model PomodoroSession {
+  id          String   @id @default(cuid())
+  userId      String
+  goalId      String? // denormalised link; no FK to keep it simple
+  minutes     Int
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  key      String
+  earnedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId])
+}
+
+model Partnership {
+  id             String        @id @default(cuid())
+  requesterId    String
+  addresseeEmail String
+  addresseeId    String?
+  status         PartnerStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+
+  requester User @relation("requester", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeEmail])
+  @@index([requesterId])
+  @@index([addresseeId])
 }
 
 model Notification {

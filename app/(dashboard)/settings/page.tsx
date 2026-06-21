@@ -6,7 +6,15 @@ export default async function SettingsPage() {
   const session = await auth();
   const user = await prisma.user.findUnique({
     where: { id: session!.user.id },
-    select: { name: true, email: true, avatar: true, emailDigest: true },
+    select: {
+      name: true,
+      email: true,
+      avatar: true,
+      emailDigest: true,
+      theme: true,
+      accent: true,
+      lifeScoreWeights: true,
+    },
   });
   if (!user) return null;
   return <SettingsClient user={user} />;

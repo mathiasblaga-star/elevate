@@ -90,3 +90,21 @@ export const passwordSchema = z.object({
 export const deleteAccountSchema = z.object({
   confirm: z.literal("DELETE"),
 });
+
+// Accepts any non-negative scale (fractions or percentages) — server re-normalises to sum 1.
+export const lifeScoreWeightsSchema = z.object({
+  habits: z.number().min(0).max(100),
+  goals: z.number().min(0).max(100),
+  mood: z.number().min(0).max(100),
+  journal: z.number().min(0).max(100),
+});
+
+// Preferences: Life Score weighting + theme/accent personalisation (M2 + M6).
+export const prefsSchema = z.object({
+  lifeScoreWeights: lifeScoreWeightsSchema.optional(),
+  theme: z.enum(["oled", "dark"]).optional(),
+  accent: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Pick a valid hex colour")
+    .optional(),
+});

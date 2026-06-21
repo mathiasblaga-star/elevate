@@ -26,3 +26,6 @@ export const badRequest = (error: unknown) =>
 
 export const notFound = () =>
   NextResponse.json({ error: "Not found" }, { status: 404 });
+
+export const tooManyRequests = () =>
+  NextResponse.json({ error: "Too many requests" }, { status: 429 });
